@@ -1,105 +1,106 @@
-// === CONFIGURAÇÕES ===
-const API_PROVIDER = "groq";
-const API_KEY = "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";
+// CONFIGURAÇÃO
+const API_KEY = "SUA_API_KEY_AQUI";
+const API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
 
-const ENDPOINTS = {
-  groq: "https://api.groq.com/openai/v1/chat/completions",
-  openrouter: "https://openrouter.ai/api/v1/chat/completions",
-  openai: "https://api.openai.com/v1/chat/completions"
-};
-
-const API_URL = ENDPOINTS[API_PROVIDER];
-
-// === ELEMENTOS ===
+// ELEMENTOS
 const messagesDiv = document.getElementById("chat-messages");
 const input = document.getElementById("user-input");
 const sendBtn = document.getElementById("send-btn");
 
-// === HISTÓRICO ===
+// HISTÓRICO
 let conversation = [
-  {
-    role: "system",
-    content: "Você é Future, uma IA inteligente que responde em português de forma clara."
-  }
+{
+role:"system",
+content:"Você é uma IA útil que responde em português."
+}
 ];
 
-// === MOSTRAR MENSAGEM ===
-function addMessage(text, isUser = false) {
-  const msg = document.createElement("div");
-  msg.classList.add("message");
-  msg.classList.add(isUser ? "user" : "bot");
-  msg.textContent = text;
+// MOSTRAR MENSAGEM
+function addMessage(text,user=false){
 
-  messagesDiv.appendChild(msg);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+const msg=document.createElement("div");
 
-  return msg;
+msg.className="message "+(user?"user":"bot");
+
+msg.textContent=text;
+
+messagesDiv.appendChild(msg);
+
+messagesDiv.scrollTop=messagesDiv.scrollHeight;
+
+return msg;
+
 }
 
-// === ENVIAR PARA IA ===
-async function sendToAI() {
+// ENVIAR
+async function sendMessage(){
 
-  const userText = input.value.trim();
-  if (!userText) return;
+const text=input.value.trim();
 
-  addMessage(userText, true);
-  input.value = "";
+if(!text) return;
 
-  const thinkingMsg = addMessage("⏳ Pensando...");
+addMessage(text,true);
 
-  try {
+input.value="";
 
-    conversation.push({
-      role: "user",
-      content: userText
-    });
+const thinking=addMessage("Pensando...");
 
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${API_KEY}`
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: conversation,
-        temperature: 0.7,
-        max_tokens: 1000
-      })
-    });
+try{
 
-    if (!response.ok) {
-      throw new Error("Erro na API");
-    }
+conversation.push({
+role:"user",
+content:text
+});
 
-    const data = await response.json();
+const response=await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer "+API_KEY
+},
+body:JSON.stringify({
+model:MODEL,
+messages:conversation,
+temperature:0.7,
+max_tokens:1000
+})
+});
 
-    thinkingMsg.remove();
+const data=await response.json();
 
-    const aiText = data.choices[0].message.content;
+thinking.remove();
 
-    addMessage(aiText);
+const reply=data.choices[0].message.content;
 
-    conversation.push({
-      role: "assistant",
-      content: aiText
-    });
+addMessage(reply);
 
-  } catch (error) {
+conversation.push({
+role:"assistant",
+content:reply
+});
 
-    thinkingMsg.remove();
-    addMessage("❌ Erro: " + error.message);
+}catch(err){
 
-  }
+thinking.remove();
+
+addMessage("Erro: "+err.message);
+
 }
 
-// === EVENTOS ===
-sendBtn.addEventListener("click", sendToAI);
+}
 
-input.addEventListener("keydown", function(e) {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    sendToAI();
-  }
+// EVENTOS
+sendBtn.addEventListener("click",sendMessage);
+
+input.addEventListener("keydown",function(e){
+
+if(e.key==="Enter" && !e.shiftKey){
+
+e.preventDefault();
+
+sendMessage();
+
+}
+
 });
