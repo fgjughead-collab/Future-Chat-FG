@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
   --bg: #0a0a0a;
   --bg-dark: #000000;
@@ -7,12 +13,6 @@
   --accent-dark: #00b7cc;
   --surface: #111122;
   --surface-hover: #1a1a33;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
 
 body {
@@ -43,6 +43,11 @@ header {
 .logo {
   filter: drop-shadow(0 0 12px var(--accent));
   animation: pulse 4s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
 }
 
 h1 {
@@ -153,18 +158,5 @@ footer {
   font-size: 0.9rem;
 }
 
-/* Animações */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-@keyframes pulse { 0% { opacity: 0.7; } 100% { opacity: 1; } }
-
-/* Scrollbar bonitinha */
-.messages::-webkit-scrollbar {
-  width: 6px;
-}
-.messages::-webkit-scrollbar-track {
-  background: rgba(0,0,0,0.3);
-}
-.messages::-webkit-scrollbar-thumb {
-  background: var(--accent);
-  border-radius: 10px;
-}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(
